@@ -1,0 +1,13 @@
+#!/bin/sh
+##############################################################################
+# Use this script for launching Jacksum easily from the command line
+# just by typing "jacksum". You can remove this comment block if you like.
+#
+# You need to edit the path below (/mnt/share/ ...) so jacksum.jar
+# can be found!
+# Make sure, that this script is reachable by the operating system
+# environment variable called PATH and make sure that
+# the execute permissions are set up correctly (man chmod).
+##############################################################################
+
+java -jar "/mnt/share/java/apps/jacksum/jacksum.jar" "$@"
