@@ -1,4 +1,4 @@
-/******************************************************************************
+/** ****************************************************************************
  *
  * Jacksum version 1.7.0 - checksum utility in Java
  * Copyright (C) 2001-2006 Dipl.-Inf. (FH) Johann Nepomuk Loefflmann,
@@ -20,8 +20,7 @@
  *
  * E-mail: jonelo@jonelo.de
  *
- *****************************************************************************/
-
+ **************************************************************************** */
 package jonelo.jacksum.algorithm;
 
 public class Elf extends AbstractChecksum {
@@ -33,33 +32,35 @@ public class Elf extends AbstractChecksum {
         reset();
     }
 
+    @Override
     public void reset() {
         value = 0;
         length = 0;
     }
 
+    @Override
     public void update(byte b) {
-         value = (value << 4) + (b&0xFF);
-         long ghash = value & 0xF0000000L;
-         if(ghash != 0) {
-            value ^= (ghash >>> 24);
-         }
-         value &= ~ghash;
-         length++;
+        value = (value << 4) + (b & 0xFF);
+        long ghsh = value & 0xF0000000L;
+        if (ghsh != 0) {
+            value ^= (ghsh >>> 24);
+        }
+        value &= ~ghsh;
+        length++;
     }
 
+    @Override
     public void update(int b) {
-        update((byte)(b & 0xFF));
+        update((byte) (b & 0xFF));
     }
 
+    @Override
     public byte[] getByteArray() {
         long val = getValue();
-        return new byte[]
-        {(byte)((val>>24)&0xff),
-         (byte)((val>>16)&0xff),
-         (byte)((val>>8)&0xff),
-         (byte)(val&0xff)};
+        return new byte[]{(byte) ((val >> 24) & 0xff),
+            (byte) ((val >> 16) & 0xff),
+            (byte) ((val >> 8) & 0xff),
+            (byte) (val & 0xff)};
     }
-
 
 }

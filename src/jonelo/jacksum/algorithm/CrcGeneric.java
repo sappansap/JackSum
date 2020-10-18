@@ -1,4 +1,4 @@
-/******************************************************************************
+/** ****************************************************************************
  *
  * Jacksum version 1.7.0 - checksum utility in Java
  * Copyright (C) 2001-2006 Dipl.-Inf. (FH) Johann Nepomuk Loefflmann,
@@ -20,7 +20,7 @@
  *
  * E-mail: jonelo@jonelo.de
  *
- *****************************************************************************/
+ **************************************************************************** */
 
 /*
  * This class implements the "Rocksoft^tm Model CRC Algorithm"
@@ -32,15 +32,13 @@
  * "ftp.adelaide.edu.au/pub/rocksoft"
  * Note: Rocksoft is a trademark of Rocksoft Pty Ltd, Adelaide, Australia.
  */
-
 package jonelo.jacksum.algorithm;
 
 import java.security.NoSuchAlgorithmException;
-import jonelo.sugar.util.GeneralString;
 import jonelo.jacksum.util.Service;
+import jonelo.sugar.util.GeneralString;
 
-
-public class CrcGeneric extends AbstractChecksum  {
+public class CrcGeneric extends AbstractChecksum {
 
     private int width;         // Width in bits [8..64], width is one bit less than the raw poly width
     private long poly;         // The algorithm's polynomial which is specified without its top bit
@@ -53,17 +51,18 @@ public class CrcGeneric extends AbstractChecksum  {
     private long maskAllBits;  // Stores the value (2 ^ width) - 1
     private long maskHelp;     // Stores the value (2 ^ (width-8)) -1
 
-
     /**
-     * Constructor with all parameters as defined in the
-     * Rocksoft^tm Model CRC Algorithm
+     * Constructor with all parameters as defined in the Rocksoft^tm Model CRC
+     * Algorithm
+     *
      * @param initialValue the initial register value
      * @param width the width of the value in bits
      * @param poly The algorithm's polynomial (without the highest bit)
      * @param refIn Reflect input bytes?
      * @param refOut Reflect output CRC?
      * @param xorOut XOR this to output CRC
-     * @throws java.security.NoSuchAlgorithmException if the parameter cannot be used to create a correct object
+     * @throws java.security.NoSuchAlgorithmException if the parameter cannot be
+     * used to create a correct object
      */
     public CrcGeneric(int width, long poly,
             long initialValue, boolean refIn,
@@ -78,16 +77,20 @@ public class CrcGeneric extends AbstractChecksum  {
         init();
     }
 
-
     /**
      * Constructor with a String parameter
-     * @param props All parameters as defined in the Rocksoft^tm Model CRC Algorithm separated by a comma
-     *        Example: crc:32,04C11DB7,FFFFFFFF,true,true,FFFFFFFF
-     * @throws java.security.NoSuchAlgorithmException if the parameter cannot be used to create a correct object
+     *
+     * @param props All parameters as defined in the Rocksoft^tm Model CRC
+     * Algorithm separated by a comma Example:
+     * crc:32,04C11DB7,FFFFFFFF,true,true,FFFFFFFF
+     * @throws java.security.NoSuchAlgorithmException if the parameter cannot be
+     * used to create a correct object
      */
     public CrcGeneric(String props) throws NoSuchAlgorithmException {
         String[] array = GeneralString.split(props, ","); // we need compatibility with JRE 1.3
-        if (array.length != 6) throw new NoSuchAlgorithmException("Can't create the algorithm, 6 parameters are expected");
+        if (array.length != 6) {
+            throw new NoSuchAlgorithmException("Can't create the algorithm, 6 parameters are expected");
+        }
         try {
             width = Integer.parseInt(array[0]);
             poly = Long.parseLong(array[1], 16);
@@ -106,13 +109,12 @@ public class CrcGeneric extends AbstractChecksum  {
      */
     private void init() throws NoSuchAlgorithmException {
         topBit = 1L << (width - 1);       // stores the value (2 ^ width)
-        maskAllBits = ~0L >>> (64-width); // stores the value (2 ^ width) - 1
+        maskAllBits = ~0L >>> (64 - width); // stores the value (2 ^ width) - 1
         maskHelp = maskAllBits >>> 8;     // stores the value (2 ^ (width-8)) -1
         check();
         fillTable();
         reset();
     }
-
 
     /**
      * Checks the parameters of the object
@@ -135,10 +137,10 @@ public class CrcGeneric extends AbstractChecksum  {
         }
     }
 
-
     /**
      * Resets the checksum object to its initial values for further use
      */
+    @Override
     public void reset() {
         length = 0;
         // Load the register with an initial value.
@@ -150,13 +152,13 @@ public class CrcGeneric extends AbstractChecksum  {
         }
     }
 
-
     /**
      * The toString() method is derived from the AbstractChecksum
+     *
      * @return a String which is understood by the constructor
      */
     public String getString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         int nibbles = width / 4 + ((width % 4 > 0) ? 1 : 0);
         sb.append(width);
         sb.append(",");
@@ -164,134 +166,135 @@ public class CrcGeneric extends AbstractChecksum  {
         sb.append(",");
         sb.append(Service.hexformat(initialValue, nibbles).toUpperCase());
         sb.append(",");
-        sb.append(refIn? "true": "false");
+        sb.append(refIn ? "true" : "false");
         sb.append(",");
-        sb.append(refOut? "true": "false");
+        sb.append(refOut ? "true" : "false");
         sb.append(",");
         sb.append(Service.hexformat(xorOut, nibbles).toUpperCase());
         return sb.toString();
     }
 
-
     /**
      * Get the name of the algorithm
+     *
      * @return the name of the algorithm as String
      */
+    @Override
     public String getName() {
         if (name == null) {
             return getString();
-        } else
+        } else {
             return name;
+        }
     }
-
 
     /**
      * Set the initial register value
+     *
      * @param initialValue the initial register value
      */
     public void setInitialValue(long initialValue) {
         this.initialValue = initialValue;
     }
 
-
     /**
      * Get the initial register value
+     *
      * @return the initial register value
      */
     public long getInitialValue() {
         return initialValue;
     }
 
-
     /**
      * Set the width in bits
+     *
      * @param width the width in bits
      */
     public void setWidth(int width) {
         this.width = width;
     }
 
-
     /**
      * Get the width in bits
+     *
      * @return the width in bits
      */
     public int getWidth() {
         return width;
     }
 
-
     /**
      * Set the algorithm's polynomial
+     *
      * @param poly the algorithm's polynomial
      */
     public void setPoly(long poly) {
         this.poly = poly;
     }
 
-
     /**
      * Get the algorithm's polynomial
+     *
      * @return the algorithm's polynomial
      */
     public long getPoly() {
         return this.poly;
     }
 
-
     /**
      * Reflect input bytes?
+     *
      * @param refIn reflect input bytes?
      */
     public void setRefIn(boolean refIn) {
         this.refIn = refIn;
     }
 
-
     /**
      * Should input bytes be reflected?
+     *
      * @return should input bytes be reflected?
      */
     public boolean getRefIn() {
         return this.refIn;
     }
 
-
     /**
      * Set whether the output CRC should be reflected
+     *
      * @param refOut should the output CRC be reflected?
      */
     public void setRefOut(boolean refOut) {
         this.refOut = refOut;
     }
 
-
     /**
      * Get whether the output CRC should be reflected
+     *
      * @return should the output CRC be reflected?
      */
     public boolean getRefOut() {
         return this.refOut;
     }
 
-
     /**
      * Set the XOR parameter
+     *
      * @param xorOut the XOR parameter
      */
     public void setXorOut(long xorOut) {
         this.xorOut = xorOut;
     }
 
-
     /**
      * Get the XOR parameter
+     *
      * @return the XOR parameter
      */
     public long getXorOut() {
         return xorOut;
     }
-
 
     /**
      * Reflects a value by taking the least significant bits into account
@@ -311,7 +314,6 @@ public class CrcGeneric extends AbstractChecksum  {
         return (value << bits) | temp;
     }
 
-
     /**
      * Precomputes all 256 values
      */
@@ -324,7 +326,7 @@ public class CrcGeneric extends AbstractChecksum  {
         for (int dividend = 0; dividend < 256; dividend++) {
 
             // initialize the remainder
-            remainder = (long)dividend;
+            remainder = (long) dividend;
 
             if (refIn) { // reflection?
                 remainder = reflect(remainder, 8);
@@ -349,17 +351,18 @@ public class CrcGeneric extends AbstractChecksum  {
         }
     }
 
-
     /**
      * Updates the checksum with the specified byte
+     *
      * @param b the byte
      */
+    @Override
     public void update(byte b) {
         // divide the byte by the polynomial
         int index;
         if (refIn) {
             // Compute the index into the precomputed CRC table.
-            index = ((int)(value ^ b) & 0xff);
+            index = ((int) (value ^ b) & 0xff);
 
             // Slide the value a full byte to the right.
             value >>>= 8;
@@ -369,7 +372,7 @@ public class CrcGeneric extends AbstractChecksum  {
 
         } else {
             // Compute the index into the precomputed CRC table.
-            index = ((int)((value >>> (width-8)) ^ b) & 0xff);
+            index = ((int) ((value >>> (width - 8)) ^ b) & 0xff);
 
             // Slide the value a full byte to the left.
             value <<= 8;
@@ -380,27 +383,29 @@ public class CrcGeneric extends AbstractChecksum  {
         length++;
     }
 
-
     /**
      * Updates the checksum with the specified byte
+     *
      * @param b the byte
      */
+    @Override
     public void update(int b) {
-        update((byte)(b & 0xFF));
+        update((byte) (b & 0xFF));
     }
-
 
     /**
      * Returns the value of the checksum
+     *
      * @return the value of the checksum
      */
+    @Override
     public long getValue() {
         return getFinal();
     }
 
-
     /**
      * Returns the CRC value for the input processed so far
+     *
      * @return the CRC value for the input processed so far
      */
     private long getFinal() {
@@ -414,17 +419,18 @@ public class CrcGeneric extends AbstractChecksum  {
         return (remainder ^ xorOut) & maskAllBits;
     }
 
-
     /**
      * Returns the result of the computation as byte array
+     *
      * @return the result of the computation as byte array
      */
+    @Override
     public byte[] getByteArray() {
         long finalvalue = getFinal();
-        byte array[] = new byte[width / 8  + ((width % 8 > 0) ? 1 : 0)];
+        byte array[] = new byte[width / 8 + ((width % 8 > 0) ? 1 : 0)];
 
         for (int i = array.length - 1; i > -1; i--) {
-            array[i] = (byte)(finalvalue & 0xFF);
+            array[i] = (byte) (finalvalue & 0xFF);
             finalvalue >>>= 8;
         }
         return array;

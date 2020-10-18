@@ -1,4 +1,4 @@
-/******************************************************************************
+/** ****************************************************************************
  *
  * Jacksum version 1.7.0 - checksum utility in Java
  * Copyright (C) 2001-2006 Dipl.-Inf. (FH) Johann Nepomuk Loefflmann,
@@ -20,8 +20,7 @@
  *
  * E-mail: jonelo@jonelo.de
  *
- *****************************************************************************/
-
+ **************************************************************************** */
 package jonelo.jacksum.algorithm;
 
 // implemented in Java from original GNU C source
@@ -32,35 +31,39 @@ public class SumSysV extends AbstractChecksum {
         separator = " ";
     }
 
+    @Override
     public void update(int b) {
         value += b & 0xFF;
         length++;
     }
 
+    @Override
     public void update(byte b) {
         value += b & 0xFF;
         length++;
     }
 
+    @Override
     public long getValue() {
         long r = (value & 0xffff) + (((value & 0xffffffff) >> 16) & 0xffff);
         value = (r & 0xffff) + (r >> 16);
         return value;
     }
 
+    @Override
     public String toString() {
         long kb = (length + 511) / 512;
         return getFormattedValue()
-        + separator + kb + separator +
-        (isTimestampWanted() ? getTimestampFormatted() + separator : "") +
-        filename;
+                + separator + kb + separator
+                + (isTimestampWanted() ? getTimestampFormatted() + separator : "")
+                + filename;
     }
 
+    @Override
     public byte[] getByteArray() {
         long val = getValue();
-        return new byte[]
-        {(byte)((val>>8)&0xff),
-         (byte)(val&0xff)};
+        return new byte[]{(byte) ((val >> 8) & 0xff),
+            (byte) (val & 0xff)};
     }
 
 }

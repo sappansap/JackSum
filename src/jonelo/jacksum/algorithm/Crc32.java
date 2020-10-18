@@ -1,4 +1,4 @@
-/******************************************************************************
+/** ****************************************************************************
  *
  * Jacksum version 1.7.0 - checksum utility in Java
  * Copyright (C) 2001-2006 Dipl.-Inf. (FH) Johann Nepomuk Loefflmann,
@@ -20,12 +20,12 @@
  *
  * E-mail: jonelo@jonelo.de
  *
- *****************************************************************************/
-
+ **************************************************************************** */
 package jonelo.jacksum.algorithm;
+
 /**
- * A class that can be used to compute the Cksum of a data stream.
- * This implementation uses the class java.util.zip.CRC32 from the Java Standard API.
+ * A class that can be used to compute the Cksum of a data stream. This
+ * implementation uses the class java.util.zip.CRC32 from the Java Standard API.
  */
 
 import java.util.zip.CRC32;
@@ -39,36 +39,41 @@ public class Crc32 extends AbstractChecksum {
         crc32 = new CRC32();
     }
 
+    @Override
     public void reset() {
         crc32.reset();
         length = 0;
     }
 
+    @Override
     public void update(byte[] buffer, int offset, int len) {
         crc32.update(buffer, offset, len);
         length += len;
     }
 
+    @Override
     public void update(int b) {
         crc32.update(b);
         length++;
     }
 
+    @Override
     public void update(byte b) {
-        update((int)(b & 0xFF));
+        update((int) (b & 0xFF));
     }
 
+    @Override
     public long getValue() {
         return crc32.getValue();
     }
 
+    @Override
     public byte[] getByteArray() {
         long val = crc32.getValue();
-        return new byte[]
-        {(byte)((val>>24)&0xff),
-         (byte)((val>>16)&0xff),
-         (byte)((val>>8)&0xff),
-         (byte)(val&0xff)};
+        return new byte[]{(byte) ((val >> 24) & 0xff),
+            (byte) ((val >> 16) & 0xff),
+            (byte) ((val >> 8) & 0xff),
+            (byte) (val & 0xff)};
     }
 
 }

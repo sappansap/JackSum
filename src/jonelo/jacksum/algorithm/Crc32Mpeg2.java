@@ -1,4 +1,4 @@
-/******************************************************************************
+/** ****************************************************************************
  *
  * Jacksum version 1.7.0 - checksum utility in Java
  * Copyright (C) 2001-2006 Dipl.-Inf. (FH) Johann Nepomuk Loefflmann,
@@ -20,12 +20,12 @@
  *
  * E-mail: jonelo@jonelo.de
  *
- *****************************************************************************/
-
+ **************************************************************************** */
 package jonelo.jacksum.algorithm;
 
 public class Crc32Mpeg2 extends Cksum {
 
+    @Override
     public void reset() {
         // MPEG-2 CRC initialised to FFFFFFFF
         value = 0xFFFFFFFF;
@@ -34,8 +34,9 @@ public class Crc32Mpeg2 extends Cksum {
 
     // this method is provided in the superclass, but 'value' is overriden
     // the MPEG2 CRC is just the raw value as below
+    @Override
     public long getValue() {
-       return (value & 0xFFFFFFFFL);
+        return (value & 0xFFFFFFFFL);
     }
 
 }

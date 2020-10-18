@@ -1,4 +1,4 @@
-/******************************************************************************
+/** ****************************************************************************
  *
  * Jacksum version 1.7.0 - checksum utility in Java
  * Copyright (C) 2001-2006  Dipl.-Inf. (FH) Johann Nepomuk Loefflmann,
@@ -20,12 +20,10 @@
  *
  * E-mail: jonelo@jonelo.de
  *
- *****************************************************************************/
-
+ **************************************************************************** */
 package jonelo.jacksum.algorithm;
 
 import jonelo.jacksum.util.Service;
-
 
 public class SumBSD extends AbstractChecksum {
 
@@ -34,7 +32,10 @@ public class SumBSD extends AbstractChecksum {
         separator = " ";
     }
 
-    /** implemented from original GNU C source */
+    /**
+     * implemented from original GNU C source
+     */
+    @Override
     public void update(byte b) {
         value = (value >> 1) + ((value & 1) << 15);
         value += b & 0xFF;
@@ -42,24 +43,25 @@ public class SumBSD extends AbstractChecksum {
         length++;
     }
 
+    @Override
     public void update(int b) {
-        update((byte)(b & 0xFF));
+        update((byte) (b & 0xFF));
     }
 
+    @Override
     public String toString() {
-        long  kb = (length + 1023) / 1024;
-        return ( (getEncoding().length()==0) ? Service.decformat(getValue(),"00000") : getFormattedValue() )
-        +separator+Service.right(kb,5)+separator+
-        (isTimestampWanted() ? getTimestampFormatted() + separator : "") +
-        getFilename();
+        long kb = (length + 1023) / 1024;
+        return ((getEncoding().length() == 0) ? Service.decformat(getValue(), "00000") : getFormattedValue())
+                + separator + Service.right(kb, 5) + separator
+                + (isTimestampWanted() ? getTimestampFormatted() + separator : "")
+                + getFilename();
     }
 
+    @Override
     public byte[] getByteArray() {
         long val = getValue();
-        return new byte[]
-        {(byte)((val>>8)&0xff),
-         (byte)(val&0xff)};
+        return new byte[]{(byte) ((val >> 8) & 0xff),
+            (byte) (val & 0xff)};
     }
-
 
 }

@@ -1,4 +1,4 @@
-/******************************************************************************
+/** ****************************************************************************
  *
  * Jacksum version 1.7.0 - checksum utility in Java
  * Copyright (C) 2001-2006 Dipl.-Inf. (FH) Johann Nepomuk Loefflmann,
@@ -20,20 +20,12 @@
  *
  * E-mail: jonelo@jonelo.de
  *
- *****************************************************************************/
-
+ **************************************************************************** */
 package jonelo.jacksum.algorithm;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Vector;
 import jonelo.jacksum.JacksumAPI;
-import jonelo.jacksum.util.Service;
 import jonelo.sugar.util.EncodingException;
 import jonelo.sugar.util.GeneralString;
 
@@ -71,15 +63,16 @@ public class CombinedChecksum extends AbstractChecksum {
     }
 
     public void setAlgorithms(String[] algos, boolean alternate) throws NoSuchAlgorithmException {
-        for (int i=0; i < algos.length; i++) {
-           addAlgorithm(algos[i], alternate);
+        for (String algo : algos) {
+            addAlgorithm(algo, alternate);
         }
     }
 
+    @Override
     public void reset() {
         // for all algorithms
-        for (int i=0; i < algorithms.size(); i++) {
-            ((AbstractChecksum)algorithms.elementAt(i)).reset();
+        for (int i = 0; i < algorithms.size(); i++) {
+            ((AbstractChecksum) algorithms.elementAt(i)).reset();
         }
         length = 0;
     }
@@ -88,8 +81,8 @@ public class CombinedChecksum extends AbstractChecksum {
      * Updates all checksums with the specified byte.
      */
     public void update(int b) {
-        for (int i=0; i < algorithms.size(); i++) {
-            ((AbstractChecksum)algorithms.elementAt(i)).update(i);
+        for (int i = 0; i < algorithms.size(); i++) {
+            ((AbstractChecksum) algorithms.elementAt(i)).update(i);
         }
         length++;
     }
@@ -98,8 +91,8 @@ public class CombinedChecksum extends AbstractChecksum {
      * Updates all checksums with the specified byte.
      */
     public void update(byte b) {
-        for (int i=0; i < algorithms.size(); i++) {
-            ((AbstractChecksum)algorithms.elementAt(i)).update(b);
+        for (int i = 0; i < algorithms.size(); i++) {
+            ((AbstractChecksum) algorithms.elementAt(i)).update(b);
         }
         length++;
     }
@@ -108,8 +101,8 @@ public class CombinedChecksum extends AbstractChecksum {
      * Updates all checksums with the specified array of bytes.
      */
     public void update(byte[] bytes, int offset, int length) {
-        for (int i=0; i < algorithms.size(); i++) {
-            ((AbstractChecksum)algorithms.elementAt(i)).update(bytes, offset, length);
+        for (int i = 0; i < algorithms.size(); i++) {
+            ((AbstractChecksum) algorithms.elementAt(i)).update(bytes, offset, length);
         }
         this.length += length;
     }
@@ -118,8 +111,8 @@ public class CombinedChecksum extends AbstractChecksum {
      * Updates all checksums with the specified array of bytes.
      */
     public void update(byte[] bytes) {
-        for (int i=0; i < algorithms.size(); i++) {
-            ((AbstractChecksum)algorithms.elementAt(i)).update(bytes);
+        for (int i = 0; i < algorithms.size(); i++) {
+            ((AbstractChecksum) algorithms.elementAt(i)).update(bytes);
         }
         this.length += bytes.length;
     }
@@ -130,15 +123,15 @@ public class CombinedChecksum extends AbstractChecksum {
     public byte[] getByteArray() {
         Vector v = new Vector();
         int size = 0;
-        for (int i=0; i < algorithms.size(); i++) {
-            byte[] tmp = ((AbstractChecksum)algorithms.elementAt(i)).getByteArray();
-            v.add (tmp);
+        for (int i = 0; i < algorithms.size(); i++) {
+            byte[] tmp = ((AbstractChecksum) algorithms.elementAt(i)).getByteArray();
+            v.add(tmp);
             size += tmp.length;
         }
         byte[] ret = new byte[size];
         int offset = 0;
-        for (int i=0; i < v.size(); i++) {
-            byte[] src = (byte[])v.elementAt(i);
+        for (int i = 0; i < v.size(); i++) {
+            byte[] src = (byte[]) v.elementAt(i);
             System.arraycopy(src, 0, ret, offset, src.length);
             offset += src.length;
         }
@@ -146,7 +139,8 @@ public class CombinedChecksum extends AbstractChecksum {
     }
 
     /**
-     * with this method the format() method can be customized, it will be launched at the beginning of format()
+     * with this method the format() method can be customized, it will be
+     * launched at the beginning of format()
      */
     public void firstFormat(StringBuffer formatBuf) {
 
@@ -161,14 +155,16 @@ public class CombinedChecksum extends AbstractChecksum {
 
         if (format.indexOf("#CHECKSUM{i}") > -1 || format.indexOf("#ALGONAME{i}") > -1) {
 
-            for (int i=0; i < algorithms.size(); i++) {
+            for (int i = 0; i < algorithms.size(); i++) {
                 StringBuffer line = new StringBuffer(format);
                 GeneralString.replaceAllStrings(line, "#CHECKSUM{i}",
-                        ((AbstractChecksum)algorithms.elementAt(i)).getFormattedValue() );
+                        ((AbstractChecksum) algorithms.elementAt(i)).getFormattedValue());
                 GeneralString.replaceAllStrings(line, "#ALGONAME{i}",
-                        ((AbstractChecksum)algorithms.elementAt(i)).getName() );
+                        ((AbstractChecksum) algorithms.elementAt(i)).getName());
                 buf.append(line);
-                if (algorithms.size() > 1) buf.append("\n");
+                if (algorithms.size() > 1) {
+                    buf.append("\n");
+                }
             }
         } else {
             buf.append(format);
@@ -177,17 +173,17 @@ public class CombinedChecksum extends AbstractChecksum {
         // are there still tokens to be transformed ?
         if (buf.toString().indexOf("#CHECKSUM{") > -1) {
             // replace CHECKSUM{1} to {CHECKSUM{n}
-            for (int i=0; i < algorithms.size(); i++) {
-                 GeneralString.replaceAllStrings(buf, "#CHECKSUM{"+i+"}",
-                        ((AbstractChecksum)algorithms.elementAt(i)).getFormattedValue() );
+            for (int i = 0; i < algorithms.size(); i++) {
+                GeneralString.replaceAllStrings(buf, "#CHECKSUM{" + i + "}",
+                        ((AbstractChecksum) algorithms.elementAt(i)).getFormattedValue());
             }
         }
 
         if (buf.toString().indexOf("#ALGONAME{") > -1) {
             // replace ALGONAME{1} to {ALGONAME{n}
-            for (int i=0; i < algorithms.size(); i++) {
-                GeneralString.replaceAllStrings(buf, "#ALGONAME{"+i+"}",
-                        ((AbstractChecksum)algorithms.elementAt(i)).getName() );
+            for (int i = 0; i < algorithms.size(); i++) {
+                GeneralString.replaceAllStrings(buf, "#ALGONAME{" + i + "}",
+                        ((AbstractChecksum) algorithms.elementAt(i)).getName());
             }
         }
         formatBuf.setLength(0);
@@ -200,10 +196,10 @@ public class CombinedChecksum extends AbstractChecksum {
      * @param encoding the encoding of the checksum.
      */
     public void setEncoding(String encoding) throws EncodingException {
-         for (int i=0; i < algorithms.size(); i++) {
-            ((AbstractChecksum)algorithms.elementAt(i)).setEncoding(encoding);
+        for (int i = 0; i < algorithms.size(); i++) {
+            ((AbstractChecksum) algorithms.elementAt(i)).setEncoding(encoding);
         }
-        this.encoding = ((AbstractChecksum)algorithms.elementAt(0)).getEncoding();
+        this.encoding = ((AbstractChecksum) algorithms.elementAt(0)).getEncoding();
     }
 
 }

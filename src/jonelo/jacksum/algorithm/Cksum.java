@@ -1,4 +1,4 @@
-/******************************************************************************
+/** ****************************************************************************
  *
  * Jacksum version 1.7.0 - checksum utility in Java
  * Copyright (C) 2001-2006 Dipl.-Inf. (FH) Johann Nepomuk Loefflmann,
@@ -20,17 +20,18 @@
  *
  * E-mail: jonelo@jonelo.de
  *
- *****************************************************************************/
-
+ **************************************************************************** */
 package jonelo.jacksum.algorithm;
+
 /**
- * A class that can be used to compute the Cksum of a data stream.
- * This is a 100% Java implementation.
+ * A class that can be used to compute the Cksum of a data stream. This is a
+ * 100% Java implementation.
  */
 
 // implemented in Java from original GNU C source
 // it computes a POSIX 1003.2 checksum.
 public class Cksum extends AbstractChecksum {
+
     protected int value;
 
     protected final int crctab[] = {
@@ -93,43 +94,48 @@ public class Cksum extends AbstractChecksum {
         reset();
     }
 
+    @Override
     public void reset() {
         value = 0;
         length = 0;
     }
 
+    @Override
     public void update(byte b) {
-        value = (value << 8) ^ crctab[ ((value >> 24) ^ b)   & 0xFF];
+        value = (value << 8) ^ crctab[((value >> 24) ^ b) & 0xFF];
         length++;
     }
 
+    @Override
     public void update(int b) {
-        update((byte)(b & 0xFF));
+        update((byte) (b & 0xFF));
     }
 
     // a 2.5 GB file (length=2684354560), filled with random
     // bytes (Java seed=0), returns a cksum value of 128656372
+    @Override
     public long getValue() {
 
         // store both length and value to temps,
         // so we can launch getValue() multiple times
         long tmpLength = length;
-        int tmpValue=value;
+        int tmpValue = value;
 
         // include the length of the file to the checksum value
-        for (; tmpLength != 0; tmpLength >>= 8)
-            tmpValue = (tmpValue << 8) ^ crctab[((tmpValue >> 24) ^ (int)(tmpLength & 0xFF)) & 0xFF];
+        for (; tmpLength != 0; tmpLength >>= 8) {
+            tmpValue = (tmpValue << 8) ^ crctab[((tmpValue >> 24) ^ (int) (tmpLength & 0xFF)) & 0xFF];
+        }
 
         return (~tmpValue & 0xFFFFFFFFL);
     }
 
+    @Override
     public byte[] getByteArray() {
         long val = getValue();
-        return new byte[]
-        {(byte)((val>>24)&0xff),
-         (byte)((val>>16)&0xff),
-         (byte)((val>>8)&0xff),
-         (byte)(val&0xff)};
+        return new byte[]{(byte) ((val >> 24) & 0xff),
+            (byte) ((val >> 16) & 0xff),
+            (byte) ((val >> 8) & 0xff),
+            (byte) (val & 0xff)};
     }
 
 }

@@ -1,4 +1,4 @@
-/******************************************************************************
+/** ****************************************************************************
  *
  * Jacksum version 1.7.0 - checksum utility in Java
  * Copyright (C) 2001-2006 Dipl.-Inf. (FH) Johann Nepomuk Loefflmann,
@@ -20,8 +20,7 @@
  *
  * E-mail: jonelo@jonelo.de
  *
- *****************************************************************************/
-
+ **************************************************************************** */
 package jonelo.jacksum.algorithm;
 
 public class Sum8 extends AbstractChecksum {
@@ -31,30 +30,33 @@ public class Sum8 extends AbstractChecksum {
         value = 0;
     }
 
+    @Override
     public void reset() {
         value = 0;
         length = 0;
     }
 
+    @Override
     public void update(byte b) {
         value += b & 0xFF;
         length++;
     }
 
+    @Override
     public void update(int b) {
         value += b & 0xFF;
         length++;
     }
 
+    @Override
     public long getValue() {
         return value % 256;
     }
 
+    @Override
     public byte[] getByteArray() {
-        return new byte[]
-         {(byte)(getValue()&0xff)};
+        return new byte[]{(byte) (getValue() & 0xff)};
     }
-
 
 }
 

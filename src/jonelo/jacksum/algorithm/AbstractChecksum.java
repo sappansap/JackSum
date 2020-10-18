@@ -1,4 +1,4 @@
-/******************************************************************************
+/** ****************************************************************************
  *
  * Jacksum version 1.7.0 - checksum utility in Java
  * Copyright (C) 2001-2006 Dipl.-Inf. (FH) Johann Nepomuk Loefflmann,
@@ -20,8 +20,7 @@
  *
  * E-mail: jonelo@jonelo.de
  *
- *****************************************************************************/
-
+ **************************************************************************** */
 package jonelo.jacksum.algorithm;
 
 import java.io.BufferedInputStream;
@@ -40,6 +39,8 @@ import jonelo.sugar.util.Base64;
 import jonelo.sugar.util.BubbleBabble;
 import jonelo.sugar.util.EncodingException;
 import jonelo.sugar.util.GeneralString;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * An abstract class that is actually the parent of all algorithms.
@@ -57,19 +58,33 @@ abstract public class AbstractChecksum implements Checksum {
     public final static String BUBBLEBABBLE = "bubblebabble";
     public final static int BUFFERSIZE = 8192;
 
+    @Getter
     protected long value;
+    @Getter
     protected long length;
+    @Getter
+    @Setter
     protected String separator;
+    @Getter
+    @Setter
     protected String filename;
+    @Getter
     protected String encoding;
+    @Getter
+    @Setter
     protected int group; // grouping of hex digits
+    @Getter
+    @Setter
     protected char groupChar; // group char, blank by default
-
+    @Getter
+    @Setter
     protected String timestampFormat;
     protected Format timestampFormatter;
+    @Getter
     protected long timestamp;
+    @Getter
+    @Setter
     protected String name;
-
 
     /**
      * Creates an AbstractChecksum.
@@ -88,22 +103,22 @@ abstract public class AbstractChecksum implements Checksum {
         name = null;
     }
 
-    /**
-     * Set the name of the algorithm
-     * @param name the name of the algorithm
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
-    }
-
+//    /**
+//     * Set the name of the algorithm
+//     *
+//     * @param name the name of the algorithm
+//     */
+//    public void setName(String name) {
+//        this.name = name;
+//    }
+//    public String getName() {
+//        return name;
+//    }
     /**
      * Resets the checksum to its initial value for further use.
      */
     // from the Checksum interface
+    @Override
     public void reset() {
         value = 0;
         length = 0;
@@ -111,26 +126,33 @@ abstract public class AbstractChecksum implements Checksum {
 
     /**
      * Updates the checksum with the specified byte.
+     *
+     * @param b
      */
     // from the Checksum interface
+    @Override
     public void update(int b) {
         length++;
     }
 
     /**
      * Updates the checksum with the specified byte.
+     *
+     * @param b
      */
     public void update(byte b) {
-        update((int)(b & 0xFF));
+        update((int) (b & 0xFF));
     }
 
     /**
      * Updates the current checksum with the specified array of bytes.
+     *
      * @param bytes the byte array to update the checksum with
      * @param offset the start offset of the data
      * @param length the number of bytes to use for the update
      */
     // from the Checksum interface
+    @Override
     public void update(byte[] bytes, int offset, int length) {
         for (int i = offset; i < length + offset; i++) {
             update(bytes[i]);
@@ -139,81 +161,100 @@ abstract public class AbstractChecksum implements Checksum {
 
     /**
      * Updates the current checksum with the specified array of bytes.
+     *
+     * @param bytes
      */
     public void update(byte[] bytes) {
         update(bytes, 0, bytes.length);
     }
 
-    /**
-     * Returns the value of the checksum.
-     *
-     * @see #getByteArray()
-     */
-    public long getValue() {
-        return value;
-    }
-
-    /**
-     * Returns the length of the processed bytes.
-     */
-    public long getLength() {
-        return length;
-    }
-
-    /**
-     * Sets the separator for the tokens.
-     */
-    public void setSeparator(String separator) {
-        this.separator = separator;
-    }
-
-    /**
-     * Gets the separator.
-     */
-    public String getSeparator() {
-        return separator;
-    }
-
+//    /**
+//     * Returns the value of the checksum.
+//     *
+//     * @return
+//     * @see #getByteArray()
+//     */
+//    @Override
+//    public long getValue() {
+//        return value;
+//    }
+//    /**
+//     * Returns the length of the processed bytes.
+//     *
+//     * @return
+//     */
+//    public long getLength() {
+//        return length;
+//    }
+//    /**
+//     * Sets the separator for the tokens.
+//     *
+//     * @param separator
+//     */
+//    public void setSeparator(String separator) {
+//        this.separator = separator;
+//    }
+//    /**
+//     * Gets the separator.
+//     *
+//     * @return
+//     */
+//    public String getSeparator() {
+//        return separator;
+//    }
     /**
      * Returns the result of the computation as byte array.
      *
+     * @return
      * @since Jacksum 1.6
      */
     public byte[] getByteArray() {
-        return new byte[]{(byte)(value&0xff)};
+        return new byte[]{(byte) (value & 0xff)};
     }
 
     /**
      * The toString() method.
+     *
+     * @return
      */
+    @Override
     public String toString() {
-        return getFormattedValue() + separator +
-        length + separator +
-        (isTimestampWanted() ? getTimestampFormatted() + separator : "") +
-        filename;
+        return getFormattedValue() + separator
+                + length + separator
+                + (isTimestampWanted() ? getTimestampFormatted() + separator : "")
+                + filename;
     }
 
     /**
      * Returns true only if the specified checksum is equal to this object.
+     *
+     * @param anObject
+     * @return
      */
+    @Override
     public boolean equals(Object anObject) {
         if (this == anObject) {
             return true;
         }
         if (anObject instanceof AbstractChecksum) {
-            AbstractChecksum abstractChecksum = (AbstractChecksum)anObject;
+            AbstractChecksum abstractChecksum = (AbstractChecksum) anObject;
             return Arrays.equals(getByteArray(), abstractChecksum.getByteArray());
         }
         return false;
     }
 
+    /**
+     *
+     * @return
+     */
+    @Override
     public int hashCode() {
         // let's do a very primitive hash rather than just a sum
         // let's also avoid circular dependencies among classes
         // let's also avoid casts, let's use shifts for performance
         // and prims for better security
         byte b[] = getByteArray();
-        int s=0;
+        int s = 0;
         for (int i = 0; i < b.length; i++) {
             s = ((s << 8) + b[i]) % 0x7FFFF1; // is prim
         }
@@ -223,41 +264,35 @@ abstract public class AbstractChecksum implements Checksum {
     /**
      * Returns the checksum formatted.
      *
+     * @return
      * @since Jacksum 1.6
      */
     public String getFormattedValue() {
         if (encoding.equalsIgnoreCase(HEX)) {
             //return getHexValue();
             return Service.format(getByteArray(), false, group, groupChar);
-        } else
-        if (encoding.equalsIgnoreCase(HEX_UPPERCASE)) {
+        } else if (encoding.equalsIgnoreCase(HEX_UPPERCASE)) {
             return Service.format(getByteArray(), true, group, groupChar);
-        } else
-        if (encoding.equalsIgnoreCase(BASE16)) {
+        } else if (encoding.equalsIgnoreCase(BASE16)) {
             return Service.format(getByteArray(), true, 0, groupChar);
-        } else
-        if (encoding.equalsIgnoreCase(BASE32)) {
+        } else if (encoding.equalsIgnoreCase(BASE32)) {
             return Base32.encode(getByteArray());
-        } else
-        if (encoding.equalsIgnoreCase(BASE64)) {
-            return Base64.encodeBytes(getByteArray(),Base64.DONT_BREAK_LINES);
-        } else
-        if (encoding.equalsIgnoreCase(BUBBLEBABBLE)) {
+        } else if (encoding.equalsIgnoreCase(BASE64)) {
+            return Base64.encodeBytes(getByteArray(), Base64.DONT_BREAK_LINES);
+        } else if (encoding.equalsIgnoreCase(BUBBLEBABBLE)) {
             return BubbleBabble.encode(getByteArray());
-        } else
-        if (encoding.equalsIgnoreCase(DEC)) {
+        } else if (encoding.equalsIgnoreCase(DEC)) {
             BigInteger big = new BigInteger(1, getByteArray());
             return big.toString();
-        } else
-        if (encoding.equalsIgnoreCase(BIN)) {
+        } else if (encoding.equalsIgnoreCase(BIN)) {
             return Service.formatAsBits(getByteArray());
-        } else
-        if (encoding.equalsIgnoreCase(OCT)) {
+        } else if (encoding.equalsIgnoreCase(OCT)) {
             BigInteger big = new BigInteger(1, getByteArray());
             return big.toString(8);
-        } else
-        // default
-        return Long.toString(getValue()); // String.valueOf(checksum.getValue())
+        } else // default
+        {
+            return Long.toString(getValue()); // String.valueOf(checksum.getValue())
+        }
     }
 
     // with this method, the format() method can be customized
@@ -277,47 +312,50 @@ abstract public class AbstractChecksum implements Checksum {
         GeneralString.replaceAllStrings(temp, "#ALGONAME", getName());
         // counter
         // temp = GeneralString.replaceAllStrings(temp, "#COUNTER", getCounter() );
-        GeneralString.replaceAllStrings(temp, "#CHECKSUM", getFormattedValue() );
+        GeneralString.replaceAllStrings(temp, "#CHECKSUM", getFormattedValue());
         // filesize
         GeneralString.replaceAllStrings(temp, "#FILESIZE", Long.toString(length));
         // filename
-        if (temp.toString().indexOf("#FILENAME{") > -1) { // comatibility to 1.3
-            File filetemp=new File(filename);
+        if (temp.toString().contains("#FILENAME{")) { // comatibility to 1.3
+            File filetemp = new File(filename);
             GeneralString.replaceAllStrings(temp, "#FILENAME{NAME}", filetemp.getName());
             String parent = filetemp.getParent();
-            if (parent==null) parent=""; else
-            if (!parent.endsWith(File.separator) &&
-                // for files on a different drive where the working dir has changed
-                (!parent.endsWith(":") && System.getProperty("os.name").toLowerCase().startsWith("windows"))
-            ) parent+=File.separator;
+            if (parent == null) {
+                parent = "";
+            } else if (!parent.endsWith(File.separator)
+                    && // for files on a different drive where the working dir has changed
+                    (!parent.endsWith(":") && System.getProperty("os.name").toLowerCase().startsWith("windows"))) {
+                parent += File.separator;
+            }
             GeneralString.replaceAllStrings(temp, "#FILENAME{PATH}", parent);
         }
         GeneralString.replaceAllStrings(temp, "#FILENAME", filename);
         // timestamp
-        if (isTimestampWanted())
-        GeneralString.replaceAllStrings(temp, "#TIMESTAMP", getTimestampFormatted());
+        if (isTimestampWanted()) {
+            GeneralString.replaceAllStrings(temp, "#TIMESTAMP", getTimestampFormatted());
+        }
         // sepcial chars
         GeneralString.replaceAllStrings(temp, "#SEPARATOR", separator);
         GeneralString.replaceAllStrings(temp, "#QUOTE", "\"");
         return temp.toString();
     }
 
-    /**
-     * Sets the filename.
-     *
-     * @param filename the filename.
-     */
-    public void setFilename(String filename) {
-        this.filename=filename;
-    }
-
-    /**
-     * Gets the filename.
-     */
-    public String getFilename() {
-        return filename;
-    }
-
+//    /**
+//     * Sets the filename.
+//     *
+//     * @param filename the filename.
+//     */
+//    public void setFilename(String filename) {
+//        this.filename = filename;
+//    }
+//    /**
+//     * Gets the filename.
+//     *
+//     * @return
+//     */
+//    public String getFilename() {
+//        return filename;
+//    }
     /**
      * Sets the encoding of the checksum.
      *
@@ -327,71 +365,85 @@ abstract public class AbstractChecksum implements Checksum {
     public void setEncoding(String encoding) throws EncodingException {
         if (encoding == null) {
             this.encoding = ""; // default
-        } else
-        if (encoding.equalsIgnoreCase("bb")) { // alias for BubbleBabble
-           this.encoding = BUBBLEBABBLE;
-        } else
-        if((encoding.length() == 0) || // empty string
-           encoding.equalsIgnoreCase(HEX) ||
-           encoding.equalsIgnoreCase(HEX_UPPERCASE) ||
-           encoding.equalsIgnoreCase(DEC) ||
-           encoding.equalsIgnoreCase(BIN) ||
-           encoding.equalsIgnoreCase(OCT) ||
-           encoding.equalsIgnoreCase(BASE16) ||
-           encoding.equalsIgnoreCase(BASE32) ||
-           encoding.equalsIgnoreCase(BASE64) ||
-           encoding.equalsIgnoreCase(BUBBLEBABBLE)) {
-           this.encoding = encoding;
-        } else
-
-        throw new EncodingException("Encoding is not supported");
+        } else if (encoding.equalsIgnoreCase("bb")) { // alias for BubbleBabble
+            this.encoding = BUBBLEBABBLE;
+        } else if ((encoding.length() == 0)
+                || // empty string
+                encoding.equalsIgnoreCase(HEX)
+                || encoding.equalsIgnoreCase(HEX_UPPERCASE)
+                || encoding.equalsIgnoreCase(DEC)
+                || encoding.equalsIgnoreCase(BIN)
+                || encoding.equalsIgnoreCase(OCT)
+                || encoding.equalsIgnoreCase(BASE16)
+                || encoding.equalsIgnoreCase(BASE32)
+                || encoding.equalsIgnoreCase(BASE64)
+                || encoding.equalsIgnoreCase(BUBBLEBABBLE)) {
+            this.encoding = encoding;
+        } else {
+            throw new EncodingException("Encoding is not supported");
+        }
     }
+//
+//    /**
+//     * Gets the encoding of the checksum.
+//     *
+//     * @return
+//     */
+//    public String getEncoding() {
+//        return encoding;
+//    }
 
     /**
-     * Gets the encoding of the checksum.
-     */
-    public String getEncoding() {
-        return encoding;
-    }
-
-    /**
-     * Returns true if groups are wanted (make sense only if encoding is HEX or HEXUP).
+     * Returns true if groups are wanted (make sense only if encoding is HEX or
+     * HEXUP).
+     *
+     * @return
      */
     public boolean isGroupWanted() {
-       return (group > 0);
+        return (group > 0);
     }
 
+//    /**
+//     * Sets the number of groups (make sense only if encoding is HEX or HEXUP).
+//     *
+//     * @param group
+//     */
+//    public void setGroup(int group) {
+//        this.group = group;
+//    }
+//
+//    /**
+//     * Gets the number of groups (make sense only if encoding is HEX or HEXUP).
+//     *
+//     * @return
+//     */
+//    public int getGroup() {
+//        return group;
+//    }
+//
+//    /**
+//     * Sets the group char (make sense only if encoding is HEX or HEXUP).
+//     *
+//     * @param groupChar
+//     */
+//    public void setGroupChar(char groupChar) {
+//        this.groupChar = groupChar;
+//    }
+//
+//    /**
+//     * Gets the group char (works only if encoding is HEX or HEXUP).
+//     *
+//     * @return
+//     */
+//    public char getGroupChar() {
+//        return groupChar;
+//    }
     /**
-     * Sets the number of groups (make sense only if encoding is HEX or HEXUP).
-     */
-    public void setGroup(int group) {
-        this.group = group;
-    }
-
-    /**
-     * Gets the number of groups (make sense only if encoding is HEX or HEXUP).
-     */
-    public int getGroup() {
-        return group;
-    }
-
-    /**
-     * Sets the group char (make sense only if encoding is HEX or HEXUP).
-     */
-    public void setGroupChar(char groupChar) {
-        this.groupChar = groupChar;
-    }
-
-    /**
-     * Gets the group char  (works only if encoding is HEX or HEXUP).
-     */
-    public char getGroupChar() {
-        return groupChar;
-    }
-
-    /**
-     * Sets the number of groups and the group char.
-     * (make sense only if encoding is HEX or HEXUP).
+     * Sets the number of groups and the group char.(make sense only if encoding
+     * is HEX or HEXUP).
+     *
+     * @param group
+     * @param groupChar
      */
     public void setGrouping(int group, char groupChar) {
         setGroup(group);
@@ -401,8 +453,9 @@ abstract public class AbstractChecksum implements Checksum {
     /**
      * Sets the format of the checksum as hex or default.
      *
-     * @deprecated As of Jacksum version 1.6
-     * replaced by <code>setEncoding()</code>.
+     * @param hex
+     * @deprecated As of Jacksum version 1.6 replaced by
+     * <code>setEncoding()</code>.
      */
     public void setHex(boolean hex) {
         encoding = hex ? HEX : "";
@@ -411,8 +464,9 @@ abstract public class AbstractChecksum implements Checksum {
     /**
      * Sets the format of the checksum as uppercase hex or lowercase hex.
      *
-     * @deprecated As of Jacksum version 1.6
-     * replaced by <code>setEncoding()</code>.
+     * @param uppercase
+     * @deprecated As of Jacksum version 1.6 replaced by
+     * <code>setEncoding()</code>.
      */
     public void setUpperCase(boolean uppercase) {
         encoding = uppercase ? HEX_UPPERCASE : HEX;
@@ -421,8 +475,9 @@ abstract public class AbstractChecksum implements Checksum {
     /**
      * Gets the format of the checksum as hex.
      *
-     * @deprecated As of Jacksum version 1.6
-     * replaced by <code>getByteArray()</code>.
+     * @return
+     * @deprecated As of Jacksum version 1.6 replaced by
+     * <code>getByteArray()</code>.
      */
     public String getHexValue() {
         return Service.format(getByteArray(), encoding.equalsIgnoreCase(HEX_UPPERCASE), group, groupChar);
@@ -438,37 +493,42 @@ abstract public class AbstractChecksum implements Checksum {
         this.timestamp = file.lastModified();
     }
 
-    public long getTimestamp() {
-        return timestamp;
-    }
-
-    /**
-     * Sets the timestampFormat to force a timestamp output
-     *
-     * @param timestampFormat the format of the timestamp.
-     */
-    public void setTimestampFormat(String timestampFormat) {
-        this.timestampFormat = timestampFormat;
-    }
-
-    /**
-     * Gets the format of the timestamp.
-     */
-    public String getTimestampFormat() {
-        return timestampFormat;
-    }
-
+//    public long getTimestamp() {
+//        return timestamp;
+//    }
+//    /**
+//     * Sets the timestampFormat to force a timestamp output
+//     *
+//     * @param timestampFormat the format of the timestamp.
+//     */
+//    public void setTimestampFormat(String timestampFormat) {
+//        this.timestampFormat = timestampFormat;
+//    }
+//
+//    /**
+//     * Gets the format of the timestamp.
+//     *
+//     * @return
+//     */
+//    public String getTimestampFormat() {
+//        return timestampFormat;
+//    }
     /**
      * Gets the timestamp, formatted.
+     *
+     * @return
      */
     public String getTimestampFormatted() {
-        if (timestampFormatter == null)
+        if (timestampFormatter == null) {
             timestampFormatter = new SimpleDateFormat(timestampFormat);
+        }
         return timestampFormatter.format(new Date(timestamp));
     }
 
     /**
      * Determines if a timestamp is wanted.
+     *
+     * @return
      */
     public boolean isTimestampWanted() {
         return (timestampFormat != null);
@@ -478,22 +538,28 @@ abstract public class AbstractChecksum implements Checksum {
      * Reads a file and calculates the checksum from it.
      *
      * @param filename - the file which should be read
+     * @return
+     * @throws java.io.IOException
      */
     public long readFile(String filename) throws IOException {
         return readFile(filename, true);
     }
 
-
     /**
      * Reads a file and calculates the checksum from it.
      *
      * @param filename the filename which should be read
-     * @param reset if reset is true, reset() will be launched before the checksum gets updated
+     * @param reset if reset is true, reset() will be launched before the
+     * checksum gets updated
+     * @return
+     * @throws java.io.IOException
      * @see reset()
      */
     public long readFile(String filename, boolean reset) throws IOException {
         this.filename = filename;
-        if (isTimestampWanted()) setTimestamp(filename);
+        if (isTimestampWanted()) {
+            setTimestamp(filename);
+        }
 
         FileInputStream fis = null;
         BufferedInputStream bis = null;
@@ -501,18 +567,24 @@ abstract public class AbstractChecksum implements Checksum {
 
         // http://java.sun.com/developer/TechTips/1998/tt0915.html#tip2
         try {
-          fis = new FileInputStream(filename);
-          bis = new BufferedInputStream(fis);
-          if (reset) reset();
-          lengthBackup = length;
-          int len = 0;
-          byte[] buffer = new byte[BUFFERSIZE];
-          while ((len = bis.read(buffer)) > -1) {
-              update(buffer, 0, len);
-          }
+            fis = new FileInputStream(filename);
+            bis = new BufferedInputStream(fis);
+            if (reset) {
+                reset();
+            }
+            lengthBackup = length;
+            int len = 0;
+            byte[] buffer = new byte[BUFFERSIZE];
+            while ((len = bis.read(buffer)) > -1) {
+                update(buffer, 0, len);
+            }
         } finally {
-          if (bis != null) bis.close();
-          if (fis != null) fis.close();
+            if (bis != null) {
+                bis.close();
+            }
+            if (fis != null) {
+                fis.close();
+            }
         }
         return length - lengthBackup;
     }

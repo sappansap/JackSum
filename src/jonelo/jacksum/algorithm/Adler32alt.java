@@ -1,4 +1,4 @@
-/******************************************************************************
+/** ****************************************************************************
  *
  * Jacksum version 1.7.0 - checksum utility in Java
  * Copyright (C) 2001-2006 Dipl.-Inf. (FH) Johann Nepomuk Loefflmann,
@@ -20,8 +20,7 @@
  *
  * E-mail: jonelo@jonelo.de
  *
- *****************************************************************************/
-
+ **************************************************************************** */
 // http://www.faqs.org/rfcs/rfc1950.html
 //
 // Adler-32 is composed of two sums accumulated per byte: s1 is
@@ -29,8 +28,8 @@
 // are done modulo 65521. s1 is initialized to 1, s2 to zero. The
 // Adler-32 checksum is stored as s2*65536 + s1 in most-
 // significant-byte first (network) order.
-
 package jonelo.jacksum.algorithm;
+
 /**
  * A class that can be used to compute the Adler32 of a data stream (alternate).
  * This is a 100% Java implementation.
@@ -45,39 +44,43 @@ public class Adler32alt extends AbstractChecksum {
         reset();
     }
 
+    @Override
     public void reset() {
         value = 1L;
         length = 0;
     }
 
+    @Override
     public void update(byte[] buffer, int offset, int len) {
         long s1 = value & 0xffff;
         long s2 = (value >> 16) & 0xffff;
 
-        for (int n=offset; n < len + offset; n++) {
+        for (int n = offset; n < len + offset; n++) {
             s1 = (s1 + (buffer[n] & 0xff)) % BASE;
-            s2 = (s2 + s1)                 % BASE;
+            s2 = (s2 + s1) % BASE;
         }
 
         value = (s2 << 16) | s1;
-        length+=len;
+        length += len;
     }
 
+    @Override
     public void update(byte b) {
         update(new byte[]{b}, 0, 1);
     }
 
+    @Override
     public void update(int b) {
-        update((byte)(b & 0xFF));
+        update((byte) (b & 0xFF));
     }
 
+    @Override
     public byte[] getByteArray() {
         long val = getValue();
-        return new byte[]
-        {(byte)((val>>24)&0xff),
-         (byte)((val>>16)&0xff),
-         (byte)((val>>8)&0xff),
-         (byte)(val&0xff)};
+        return new byte[]{(byte) ((val >> 24) & 0xff),
+            (byte) ((val >> 16) & 0xff),
+            (byte) ((val >> 8) & 0xff),
+            (byte) (val & 0xff)};
     }
 
 }

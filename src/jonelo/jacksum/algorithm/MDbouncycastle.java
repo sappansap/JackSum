@@ -1,4 +1,4 @@
-/******************************************************************************
+/** ****************************************************************************
  *
  * Jacksum version 1.7.0 - checksum utility in Java
  * Copyright (C) 2001-2006 Dipl.-Inf. (FH) Johann Nepomuk Loefflmann,
@@ -23,7 +23,7 @@
  * MDgnu is a wrapper class for accessing MessageDigests from the
  * GNU crypto project http://www.gnu.org/software/classpathx/crypto
  *
- *****************************************************************************/
+ **************************************************************************** */
 package jonelo.jacksum.algorithm;
 
 import java.security.NoSuchAlgorithmException;
@@ -37,12 +37,17 @@ import jonelo.jacksum.adapt.org.bouncycastle.crypto.digests.RIPEMD320Digest;
  * (provided by bouncycastle.org).
  */
 public class MDbouncycastle extends AbstractChecksum {
-    
+
     private Digest md = null;
-    private boolean virgin=true;
+    private boolean virgin = true;
     private byte[] digest = null;
-    
-    /** Creates new MDbouncycastle */
+
+    /**
+     * Creates new MDbouncycastle
+     *
+     * @param arg
+     * @throws NoSuchAlgorithmException
+     */
     public MDbouncycastle(String arg) throws NoSuchAlgorithmException {
         // value0; we don't use value, we use md
         length = 0;
@@ -50,52 +55,60 @@ public class MDbouncycastle extends AbstractChecksum {
         separator = " ";
         encoding = HEX;
         virgin = true;
-        if (arg.equalsIgnoreCase("gost"))
-            md = new GOST3411Digest(); else
-        if (arg.equalsIgnoreCase("ripemd256"))
-            md = new RIPEMD256Digest(); else
-        if (arg.equalsIgnoreCase("ripemd320"))
-            md = new RIPEMD320Digest(); else
-        throw new NoSuchAlgorithmException(arg + " is an unknown algorithm.");
+        if (arg.equalsIgnoreCase("gost")) {
+            md = new GOST3411Digest();
+        } else if (arg.equalsIgnoreCase("ripemd256")) {
+            md = new RIPEMD256Digest();
+        } else if (arg.equalsIgnoreCase("ripemd320")) {
+            md = new RIPEMD320Digest();
+        } else {
+            throw new NoSuchAlgorithmException(arg + " is an unknown algorithm.");
+        }
     }
-    
+
+    @Override
     public void reset() {
         md.reset();
         length = 0;
         virgin = true;
     }
-    
+
+    @Override
     public void update(byte[] buffer, int offset, int len) {
         md.update(buffer, offset, len);
         length += len;
     }
-    
+
+    @Override
     public void update(byte b) {
         md.update(b);
         length++;
     }
-    
+
+    @Override
     public void update(int b) {
-        update((byte)(b & 0xFF));
+        update((byte) (b & 0xFF));
     }
-    
+
+    @Override
     public String toString() {
-        return getFormattedValue() +separator+
-                (isTimestampWanted()? getTimestampFormatted()+separator:"")+
-                getFilename();
+        return getFormattedValue() + separator
+                + (isTimestampWanted() ? getTimestampFormatted() + separator : "")
+                + getFilename();
     }
-    
+
+    @Override
     public byte[] getByteArray() {
         if (virgin) {
-            digest=new byte[md.getDigestSize()];
-            md.doFinal(digest,0);
+            digest = new byte[md.getDigestSize()];
+            md.doFinal(digest, 0);
             //digest=md.digest();
-            virgin=false;
+            virgin = false;
         }
         // we don't expose internal representations
         byte[] save = new byte[digest.length];
-        System.arraycopy(digest,0,save,0,digest.length);
+        System.arraycopy(digest, 0, save, 0, digest.length);
         return save;
     }
-    
+
 }

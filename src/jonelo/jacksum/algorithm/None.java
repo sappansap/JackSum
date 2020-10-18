@@ -1,4 +1,4 @@
-/******************************************************************************
+/** ****************************************************************************
  *
  * Jacksum version 1.7.0 - checksum utility in Java
  * Copyright (C) 2001-2006 Dipl.-Inf. (FH) Johann Nepomuk Loefflmann,
@@ -20,8 +20,9 @@
  *
  * E-mail: jonelo@jonelo.de
  *
- *****************************************************************************/
+ **************************************************************************** */
 package jonelo.jacksum.algorithm;
+
 import java.io.*;
 
 public class None extends AbstractChecksum {
@@ -31,24 +32,29 @@ public class None extends AbstractChecksum {
         encoding = HEX;
     }
 
+    @Override
     public void reset() {
         length = 0;
     }
 
+    @Override
     public String toString() {
-        return
-        length + separator +
-        (isTimestampWanted() ? getTimestampFormatted() + separator : "") +
-        getFilename();
+        return length + separator
+                + (isTimestampWanted() ? getTimestampFormatted() + separator : "")
+                + getFilename();
     }
 
+    @Override
     public String getFormattedValue() {
         return "";
     }
 
+    @Override
     public long readFile(String filename, boolean reset) throws IOException {
-        this.filename=filename;
-        if (isTimestampWanted()) setTimestamp(filename);
+        this.filename = filename;
+        if (isTimestampWanted()) {
+            setTimestamp(filename);
+        }
 
         File f = new File(filename);
         length = f.length();
